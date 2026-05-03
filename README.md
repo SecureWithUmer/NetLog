@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/SecureWithUmer/NetLog/blob/main/logo.png" width="200">
+</p>
+
 # 🛡️ NetLog: Cyber Log Analyzer & IPS
 
 ![Version](https://img.shields.io/badge/version-v2.0-blue.svg)

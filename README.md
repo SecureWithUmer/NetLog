@@ -71,6 +71,7 @@ Beyond passive analysis, NetLog operates as an active **Intrusion Prevention Sys
 
 ## 📜 Program Pseudocode 
 
+```
 START PROGRAM NetLog
 
 CALL displayBanner()
@@ -113,6 +114,7 @@ WHILE TRUE
 END WHILE
 
 END PROGRAM
+```
 
 ---
 

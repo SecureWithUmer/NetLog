@@ -5,7 +5,6 @@
 ![C++](https://img.shields.io/badge/language-C%2B%2B98%2F11-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-> **"Veni, Vidi, Vici"**  
 > An interactive, command-line Intrusion Detection and Prevention System (IDS/IPS) built in C++.
 
 ---
@@ -59,6 +58,9 @@ Beyond passive analysis, NetLog operates as an active **Intrusion Prevention Sys
 ## 📁 Project Structure
 
 
+## 📁 Project Structure
+
+
 NetLog/
 │
 ├── src/
@@ -93,24 +95,245 @@ NetLog/
 ## 📜 System Pseudocode
 
 
-START PROGRAM NetLog
+// ========================================================
+// PSEUDOCODE: NETLOG (CYBER LOG ANALYZER & FIREWALL IPS)
+// ========================================================
 
-LOAD logs
-SORT logs by threat score
+// 1. DATA STRUCTURE DEFINITION
+STRUCTURE LogEntry:
+    ipAddress (Text)
+    timestamp (Text)
+    action (Text)
+    status (Text)
+    severityScore (Number)
+    threatLevel (Text)
+    ipStatus (Text) // BLOCKED, SAFE, or UNVERIFIED
+END STRUCTURE
 
-WHILE system running:
-TAKE user input
+CONSTANTS:
+    MAX_LOGS = 100
 
-IF "summary" → show summary
-IF "scan" → show report
-IF "ip_list" → show IPs
+// ========================================================
+// 2. MAIN PROGRAM FLOW
+// ========================================================
+BEGIN MAIN:
+    DECLARE securityLogs AS Array of LogEntry of size MAX_LOGS
+    DECLARE totalLogs = 0
+    DECLARE activeFilePath = ""
+    DECLARE inputLine = ""
 
-IF "block <ip>" → mark BLOCKED + save
-IF "safe <ip>" → mark SAFE + save
+    CALL displayBanner()
 
-IF "exit" → stop program
+    // Phase 1: Setup and File Loading
+    WHILE TRUE:
+        PRINT "Please enter the log file path to begin: "
+        READ activeFilePath
+        
+        REMOVE quote characters from activeFilePath IF present
+        
+        totalLogs = CALL loadAndScoreLogs(securityLogs, activeFilePath)
+        
+        IF totalLogs > 0 THEN
+            PRINT "File added successfully!"
+            CALL sortLogs(securityLogs, totalLogs)
+            BREAK loop
+        END IF
+    END WHILE
 
-END
+    PRINT Available Commands Menu
+
+    // Phase 2: Interactive Command Shell
+    WHILE TRUE:
+        PRINT "root@netlog:~# "
+        READ inputLine
+        
+        IF inputLine is empty THEN
+            CONTINUE to next iteration
+            
+        IF inputLine == "summary" THEN
+            CALL displaySummary(securityLogs, totalLogs)
+            
+        ELSE IF inputLine == "scan" THEN
+            CALL generateReport(securityLogs, totalLogs)
+            
+        ELSE IF inputLine == "ip_list" THEN
+            CALL displayIPList(securityLogs, totalLogs)
+            
+        ELSE IF inputLine STARTS WITH "block " THEN
+            targetIP = EXTRACT IP from inputLine
+            CALL updateIPStatus(securityLogs, totalLogs, activeFilePath, targetIP, "BLOCKED")
+            
+        ELSE IF inputLine STARTS WITH "safe " THEN
+            targetIP = EXTRACT IP from inputLine
+            CALL updateIPStatus(securityLogs, totalLogs, activeFilePath, targetIP, "SAFE")
+            
+        ELSE IF inputLine == "clear" THEN
+            CLEAR console screen
+            CALL displayBanner()
+            
+        ELSE IF inputLine == "help" THEN
+            PRINT Commands Menu
+            
+        ELSE IF inputLine == "exit" THEN
+            PRINT "Shutting down..."
+            BREAK loop
+            
+        ELSE
+            PRINT "Invalid command error"
+        END IF
+    END WHILE
+END MAIN
+
+// ========================================================
+// 3. CORE FUNCTION DEFINITIONS
+// ========================================================
+
+FUNCTION loadAndScoreLogs(logsArray, filepath):
+    OPEN file at filepath for READING
+    IF file cannot be opened THEN
+        PRINT "ERROR"
+        RETURN 0
+        
+    DECLARE count = 0
+    WHILE end of file NOT reached AND count < MAX_LOGS:
+        READ current line of text
+        
+        // String Slicing
+        EXTRACT ipAddress from line
+        EXTRACT timestamp from line
+        EXTRACT action from line
+        EXTRACT status from line
+        
+        // Firewall Status Check
+        IF ipStatus exists at end of line THEN
+            EXTRACT ipStatus
+        ELSE
+            SET ipStatus = "UNVERIFIED"
+            
+        // Rule-Based Threat Engine
+        IF action == "SQL_INJECTION" OR action == "XSS_ATTACK" THEN
+            SET severityScore = 10, threatLevel = "CRITICAL"
+        ELSE IF action == "PORT_SCAN" THEN
+            SET severityScore = 8, threatLevel = "HIGH"
+        ELSE IF action == "LOGIN" AND status == "FAILED" THEN
+            SET severityScore = 7, threatLevel = "HIGH"
+        ELSE IF action == "INVALID_AUTH" THEN
+            SET severityScore = 6, threatLevel = "MEDIUM"
+        ELSE IF status == "SUCCESS" OR action == "PING" THEN
+            SET severityScore = 1, threatLevel = "LOW"
+        ELSE
+            SET severityScore = 3, threatLevel = "MEDIUM"
+            
+        INCREMENT count
+    END WHILE
+    
+    CLOSE file
+    RETURN count
+END FUNCTION
+
+
+FUNCTION sortLogs(logsArray, totalLogs):
+    // Bubble Sort Algorithm (Descending)
+    FOR i = 0 TO totalLogs - 1:
+        FOR j = 0 TO totalLogs - i - 1:
+            IF logsArray[j].severityScore < logsArray[j + 1].severityScore THEN
+                temp = logsArray[j]
+                logsArray[j] = logsArray[j + 1]
+                logsArray[j + 1] = temp
+            END IF
+        END FOR
+    END FOR
+END FUNCTION
+
+
+FUNCTION displaySummary(logsArray, totalLogs):
+    DECLARE Counters: crit=0, high=0, med=0, low=0
+    DECLARE Counters: blocked=0, safe=0, unverified=0
+    
+    FOR i = 0 TO totalLogs - 1:
+        INCREMENT matching threatLevel counter
+        INCREMENT matching ipStatus counter
+    END FOR
+    
+    PRINT "THREAT SUMMARY"
+    PRINT Threat Level Counts
+    PRINT Firewall Status Counts
+END FUNCTION
+
+
+FUNCTION generateReport(logsArray, totalLogs):
+    PRINT Table Headers
+    
+    FOR i = 0 TO totalLogs - 1:
+        // Full-Row Color Logic
+        IF ipStatus == "BLOCKED" THEN
+            SET COLOR RED
+        ELSE IF ipStatus == "SAFE" THEN
+            SET COLOR GREEN
+        ELSE
+            SET COLOR based on threatLevel
+            
+        PRINT logsArray[i] variables in formatted columns
+        RESET COLOR
+    END FOR
+END FUNCTION
+
+
+FUNCTION displayIPList(logsArray, totalLogs):
+    DECLARE uniqueIPs Array
+    DECLARE uniqueStatus Array
+    DECLARE uniqueCount = 0
+    
+    // Find Unique IPs
+    FOR i = 0 TO totalLogs - 1:
+        IF logsArray[i].ipAddress IS NOT IN uniqueIPs THEN
+            ADD logsArray[i].ipAddress TO uniqueIPs
+            ADD logsArray[i].ipStatus TO uniqueStatus
+            INCREMENT uniqueCount
+        END IF
+    END FOR
+    
+    PRINT "UNIQUE IP LIST"
+    FOR i = 0 TO uniqueCount - 1:
+        SET COLOR based on uniqueStatus[i]
+        PRINT uniqueIPs[i] AND uniqueStatus[i]
+        RESET COLOR
+    END FOR
+END FUNCTION
+
+
+FUNCTION updateIPStatus(logsArray, totalLogs, filepath, targetIP, newStatus):
+    DECLARE found = FALSE
+    
+    // Update Array in Memory
+    FOR i = 0 TO totalLogs - 1:
+        IF logsArray[i].ipAddress == targetIP THEN
+            logsArray[i].ipStatus = newStatus
+            found = TRUE
+        END IF
+    END FOR
+    
+    // Trigger Persistence and UI Update
+    IF found == TRUE THEN
+        CALL saveFile(logsArray, totalLogs, filepath)
+        PRINT "SUCCESS"
+        CALL displaySummary(logsArray, totalLogs)
+        CALL generateReport(logsArray, totalLogs)
+    ELSE
+        PRINT "ERROR: IP Not Found"
+    END IF
+END FUNCTION
+
+
+FUNCTION saveFile(logsArray, totalLogs, filepath):
+    OPEN file at filepath for WRITING (Overwrite Mode)
+    
+    FOR i = 0 TO totalLogs - 1:
+        WRITE logsArray[i] variables in original string format to file
+    END FOR
+    
+    CLOSE file
+END FUNCTION
 
 
 ---
@@ -133,18 +356,10 @@ Use help command to view available options.
 
 👥 Development Team
 
-Team Overwriters
+Team Overwriters:
+Umer Farooq
+Amna Zahid
+Hania Asif
 
-sp4Panda — Lead Architect & Software Engineer
+Developed as part of the Programming Fundamentals curriculum at The University of Lahore.
 
-Developed as part of the Programming Fundamentals curriculum at COMSATS University.
-
-
----
-
-✅ I converted and cleaned your file from: :contentReference[oaicite:0]{index=0}  
-
-If you want, I can:
-- add **GitHub badges properly linked**
-- make it **more beginner-friendly**
-- or turn it into a **portfolio-level README (very impressive for CVs)**

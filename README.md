@@ -55,29 +55,6 @@ Beyond passive analysis, NetLog operates as an active **Intrusion Prevention Sys
 
 ---
 
-## 📁 Project Structure
-
-
-## 📁 Project Structure
-
-
-NetLog/
-│
-├── src/
-│ └── main.cpp
-│
-├── data/
-│ └── logs.txt
-│
-├── docs/
-│ └── README.md
-│
-├── Makefile.win
-└── NetLog.exe
-
-
----
-
 ## 🧠 Core Logic & Threat Engine
 
 | Attack Type        | Status   | Threat Level | Score |
@@ -361,5 +338,5 @@ Umer Farooq
 Amna Zahid
 Hania Asif
 
-Developed as part of the Programming Fundamentals curriculum at The University of Lahore.
+Developed as part of the Programming Fundamentals Lab Project at The University of Lahore.
 

@@ -133,13 +133,15 @@ Run
 Provide the log file path when prompted (e.g., ../data/logs.txt)
 
 Use help command to view available options.
+```
 
-👥 Development Team
+## Development Team
 
-Team Overwriters:
-Umer Farooq
-Amna Zahid
-Hania Asif
-
-Developed as part of the Programming Fundamentals Lab Project at The University of Lahore.
+### Team Overwriters:
+   ```
+    Umer Farooq
+    Amna Zahid
+    Hania Asif
+```
+> Developed as part of the Programming Fundamentals Lab Project at The University of Lahore.
 
